@@ -13,8 +13,27 @@ function App() {
   };
 
   return (
-    <div>
-      <button onClick={onClose}>Закрыть</button>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <button
+        onClick={onClose}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "blue",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Закрыть
+      </button>
     </div>
   );
 }
