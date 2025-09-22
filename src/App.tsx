@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import "./App.css";
-import "./types/telegram";
+import "./telegram";
 
 const tg = window.Telegram.WebApp;
 
