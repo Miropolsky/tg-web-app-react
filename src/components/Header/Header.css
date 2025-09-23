@@ -118,8 +118,8 @@
 
 /* Кнопка закрытия */
 .close-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 107, 107, 0.2);
+  border: 2px solid rgba(255, 107, 107, 0.4);
   border-radius: 12px;
   width: 44px;
   height: 44px;
@@ -127,21 +127,41 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.close-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 107, 107, 0.3), rgba(255, 107, 107, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 10px;
 }
 
 .close-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 107, 107, 0.3);
+  border-color: rgba(255, 107, 107, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+.close-button:hover::before {
+  opacity: 1;
 }
 
 .close-button:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+  background: rgba(255, 107, 107, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
 }
 
 .close-icon {
@@ -149,11 +169,19 @@
   height: 20px;
   color: white;
   stroke: currentColor;
-  transition: transform 0.3s ease;
+  stroke-width: 2.5;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 }
 
 .close-button:hover .close-icon {
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(1.1);
+  stroke-width: 3;
+}
+
+.close-button:active .close-icon {
+  transform: rotate(90deg) scale(0.95);
 }
 
 /* Адаптивность для больших экранов */
@@ -264,13 +292,16 @@
   }
   
   .close-button {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 107, 107, 0.3);
+    border-color: rgba(255, 107, 107, 0.5);
   }
   
   .close-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
   }
 }
 
@@ -321,13 +352,16 @@
   }
   
   .close-button {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 107, 107, 0.4);
+    border-color: rgba(255, 107, 107, 0.6);
   }
   
   .close-icon {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    stroke-width: 3;
   }
 }
 
@@ -364,6 +398,10 @@
 
 .header {
   animation: slideDown 0.5s ease-out;
+}
+
+.close-button {
+  animation: fadeInRight 0.8s ease-out 0.3s both;
 }
 
 .close-button:focus {

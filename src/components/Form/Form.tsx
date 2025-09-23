@@ -1,119 +1,55 @@
-import { useCallback, useEffect, useState } from "react";
-import { useTelegram } from "../../hooks/useTelegram";
+import { useCallback } from "react";
+import { useFormState } from "../../hooks/useFormState";
+import { useFormValidation } from "../../hooks/useFormValidation";
+import { useTelegramButton } from "../../hooks/useTelegramButton";
+import type { FormData } from "../../types/form";
 import "./Form.css";
+import { FormField } from "./FormField";
+import { FormSelect } from "./FormSelect";
 
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  type: string;
-}
+const initialForm: FormData = {
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  type: "",
+};
 
-interface FormErrors {
-  name?: string;
-  email?: string;
-  phone?: string;
-}
+const organizationTypes = [
+  { value: "Юр. лицо", label: "Юридическое лицо" },
+  { value: "ИП", label: "Индивидуальный предприниматель" },
+  { value: "Физ. лицо", label: "Физическое лицо" },
+];
 
 export const Form = () => {
-  const { tg } = useTelegram();
-  const [form, setForm] = useState<FormData>({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    type: "",
+  const { form, errors, updateField, isFormValid } =
+    useFormValidation(initialForm);
+  const { formState, setSuccess } = useFormState();
+
+  const onSubmit = useCallback(() => {
+    // Дополнительная логика после успешной отправки
+    setSuccess(true);
+  }, [setSuccess]);
+
+  useTelegramButton({
+    form,
+    isFormValid: isFormValid(),
+    isSubmitting: formState.isSubmitting,
+    isSuccess: formState.isSuccess,
+    onSubmit,
   });
-  const [errors, setErrors] = useState<FormErrors>({});
 
-  // Валидация полей
-  const validateField = (name: string, value: string): string | undefined => {
-    switch (name) {
-      case "name":
-        if (!value.trim()) return "Имя обязательно для заполнения";
-        if (value.trim().length < 2)
-          return "Имя должно содержать минимум 2 символа";
-        return undefined;
-
-      case "email": {
-        if (!value.trim()) return "Email обязателен для заполнения";
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) return "Введите корректный email";
-        return undefined;
-      }
-
-      case "phone": {
-        if (!value.trim()) return "Телефон обязателен для заполнения";
-        const phoneRegex = /^[+]?[1-9]\d{0,15}$/;
-        const cleanPhone = value.replace(/[\s\-()]/g, "");
-        if (!phoneRegex.test(cleanPhone))
-          return "Введите корректный номер телефона";
-        return undefined;
-      }
-
-      default:
-        return undefined;
-    }
-  };
-
-  // Проверка валидности всей формы
-  const isFormValid = useCallback((): boolean => {
-    return !!(
-      form.name.trim() &&
-      form.email.trim() &&
-      form.phone.trim() &&
-      !validateField("name", form.name) &&
-      !validateField("email", form.email) &&
-      !validateField("phone", form.phone)
-    );
-  }, [form.name, form.email, form.phone]);
-
-  // Обработка отправки формы
-  const handleSubmit = useCallback(() => {
-    if (isFormValid()) {
-      tg.sendData(JSON.stringify(form));
-      tg.showAlert("Заявка успешно отправлена!");
-      setTimeout(() => tg.close(), 1500);
-    } else {
-      tg.showAlert("Пожалуйста, заполните все обязательные поля корректно");
-    }
-  }, [form, isFormValid, tg]);
-
-  // Настройка MainButton при инициализации
-  useEffect(() => {
-    tg.MainButton.setText("Отправить заявку");
-    tg.MainButton.onClick(handleSubmit);
-  }, [tg, handleSubmit]);
-
-  // Показ/скрытие MainButton в зависимости от валидности формы
-  useEffect(() => {
-    if (isFormValid()) {
-      tg.MainButton.show();
-    } else {
-      tg.MainButton.hide();
-    }
-  }, [tg, isFormValid]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-
-    // Валидация в реальном времени для обязательных полей
-    if (name === "name" || name === "email" || name === "phone") {
-      const error = validateField(name, value);
-      setErrors((prev) => ({
-        ...prev,
-        [name]: error,
-      }));
-    }
-  };
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      updateField(name as keyof FormData, value);
+    },
+    [updateField]
+  );
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSubmit();
+    // Логика отправки обрабатывается в useTelegramButton
   };
 
   return (
@@ -121,90 +57,61 @@ export const Form = () => {
       <form className="form" onSubmit={handleFormSubmit}>
         <h3 className="form-title">Введите ваши данные</h3>
 
-        <div className="form-group">
-          <label className="form-label">
-            <span className="form-label-text">Имя *</span>
-            <input
-              className={`form-input ${errors.name ? "form-input--error" : ""}`}
-              type="text"
-              name="name"
-              placeholder="Введите ваше имя"
-              value={form.name}
-              onChange={handleChange}
-            />
-            {errors.name && <span className="form-error">{errors.name}</span>}
-          </label>
-        </div>
+        <FormField
+          name="name"
+          label="Имя"
+          placeholder="Введите ваше имя"
+          value={form.name}
+          error={errors.name}
+          required
+          onChange={handleChange}
+        />
 
-        <div className="form-group">
-          <label className="form-label">
-            <span className="form-label-text">Email *</span>
-            <input
-              className={`form-input ${
-                errors.email ? "form-input--error" : ""
-              }`}
-              type="email"
-              name="email"
-              placeholder="example@email.com"
-              value={form.email}
-              onChange={handleChange}
-            />
-            {errors.email && <span className="form-error">{errors.email}</span>}
-          </label>
-        </div>
+        <FormField
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="example@email.com"
+          value={form.email}
+          error={errors.email}
+          required
+          onChange={handleChange}
+        />
 
-        <div className="form-group">
-          <label className="form-label">
-            <span className="form-label-text">Телефон *</span>
-            <input
-              className={`form-input ${
-                errors.phone ? "form-input--error" : ""
-              }`}
-              type="tel"
-              name="phone"
-              placeholder="+7 (999) 123-45-67"
-              value={form.phone}
-              onChange={handleChange}
-            />
-            {errors.phone && <span className="form-error">{errors.phone}</span>}
-          </label>
-        </div>
+        <FormField
+          name="phone"
+          label="Телефон"
+          type="tel"
+          placeholder="+7 (999) 123-45-67"
+          value={form.phone}
+          error={errors.phone}
+          required
+          onChange={handleChange}
+        />
 
-        <div className="form-group">
-          <label className="form-label">
-            <span className="form-label-text">Адрес</span>
-            <input
-              className="form-input"
-              type="text"
-              name="address"
-              placeholder="Введите ваш адрес"
-              value={form.address}
-              onChange={handleChange}
-            />
-          </label>
-        </div>
+        <FormField
+          name="address"
+          label="Адрес"
+          placeholder="Введите ваш адрес"
+          value={form.address}
+          onChange={handleChange}
+        />
 
-        <div className="form-group">
-          <label className="form-label">
-            <span className="form-label-text">Тип организации</span>
-            <select
-              className="form-select"
-              name="type"
-              value={form.type}
-              onChange={handleChange}
-            >
-              <option value="">Выберите тип</option>
-              <option value="Юр. лицо">Юридическое лицо</option>
-              <option value="ИП">Индивидуальный предприниматель</option>
-              <option value="Физ. лицо">Физическое лицо</option>
-            </select>
-          </label>
-        </div>
+        <FormSelect
+          name="type"
+          label="Тип организации"
+          placeholder="Выберите тип"
+          value={form.type}
+          options={organizationTypes}
+          onChange={handleChange}
+        />
 
-        <button className="form-button" type="submit">
-          <span className="button-text">Отправить заявку</span>
-          <span className="button-icon">→</span>
-        </button>
+        {/* Кнопка отправки управляется через Telegram MainButton */}
+        <div className="form-info">
+          <p className="form-info-text">
+            📱 Нажмите кнопку "Отправить заявку" внизу экрана
+          </p>
+        </div>
       </form>
     </div>
   );
