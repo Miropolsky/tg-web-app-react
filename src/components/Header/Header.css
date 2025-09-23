@@ -1,11 +1,390 @@
 .header {
-  width: 100%;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-medium);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeInDown 0.8s ease-out;
 }
 
-.username {
-  margin-left: auto;
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  width: 100%;
+}
+  
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.app-name {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+}
+
+/* Информация о пользователе */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.user-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-placeholder:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-name {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.user-username {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* Кнопка закрытия */
+.close-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.close-button:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.close-icon {
+  width: 20px;
+  height: 20px;
+  color: white;
+  stroke: currentColor;
+  transition: transform 0.3s ease;
+}
+
+.close-button:hover .close-icon {
+  transform: rotate(90deg);
+}
+
+/* Адаптивность для больших экранов */
+@media (min-width: 1200px) {
+  .header-content {
+    padding: 16px 40px;
+  }
+  
+  .app-name {
+    font-size: 20px;
+  }
+  
+  .logo-icon {
+    font-size: 28px;
+  }
+  
+  .user-name {
+    font-size: 16px;
+    max-width: 180px;
+  }
+  
+  .user-username {
+    font-size: 14px;
+    max-width: 180px;
+  }
+  
+  .avatar-image,
+  .avatar-placeholder {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .avatar-placeholder {
+    font-size: 18px;
+  }
+  
+  .close-button {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .close-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Адаптивность для средних экранов */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .header-content {
+    padding: 14px 24px;
+  }
+  
+  .app-name {
+    font-size: 17px;
+  }
+  
+  .user-name {
+    font-size: 15px;
+    max-width: 140px;
+  }
+  
+  .user-username {
+    font-size: 13px;
+    max-width: 140px;
+  }
+  
+  .avatar-image,
+  .avatar-placeholder {
+    width: 42px;
+    height: 42px;
+  }
+  
+  .close-button {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 768px) {
+  .header-content {
+    padding: 10px 16px;
+  }
+  
+  .app-name {
+    font-size: 16px;
+  }
+  
+  .user-name {
+    font-size: 13px;
+    max-width: 100px;
+  }
+  
+  .user-username {
+    font-size: 11px;
+    max-width: 100px;
+  }
+  
+  .avatar-image,
+  .avatar-placeholder {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .avatar-placeholder {
+    font-size: 14px;
+  }
+  
+  .close-button {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .close-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+  .header-content {
+    padding: 8px 12px;
+  }
+  
+  .app-logo {
+    gap: 8px;
+  }
+  
+  .logo-icon {
+    font-size: 20px;
+  }
+  
+  .app-name {
+    font-size: 14px;
+  }
+  
+  .user-info {
+    gap: 8px;
+  }
+  
+  .user-details {
+    gap: 1px;
+  }
+  
+  .user-name {
+    font-size: 12px;
+    max-width: 80px;
+  }
+  
+  .user-username {
+    font-size: 10px;
+    max-width: 80px;
+  }
+  
+  .avatar-image,
+  .avatar-placeholder {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .avatar-placeholder {
+    font-size: 12px;
+  }
+  
+  .close-button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .close-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+  .header-content {
+    padding: 6px 10px;
+  }
+  
+  .app-name {
+    display: none;
+  }
+  
+  .user-name {
+    max-width: 60px;
+  }
+  
+  .user-username {
+    display: none;
+  }
+}
+
+/* Анимация появления */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  animation: slideDown 0.5s ease-out;
+}
+
+.close-button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Темная тема (если нужно) */
+@media (prefers-color-scheme: dark) {
+  .header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+}
+
+/* Высокий контраст */
+@media (prefers-contrast: high) {
+  .header {
+    border-bottom: 2px solid white;
+  }
+  
+  .close-button {
+    border-width: 3px;
+  } 
 }
